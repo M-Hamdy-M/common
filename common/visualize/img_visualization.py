@@ -16,7 +16,7 @@ def imshow(img, title=None):
     plt.show()
 
 
-def show_imgs(images, titles=None, shape=(3,3) , label=None):
+def show_imgs(images, titles=None, shape=(3,3) , label=None, random_sample=False):
   """
   Displays multiple images
   Arguments: 
@@ -24,13 +24,21 @@ def show_imgs(images, titles=None, shape=(3,3) , label=None):
     titles: Optional titles of the given images array [must be has at least the same length as the images array]
     shape: Shape of the shown images in the shape of (row, cols) [defaulted to (3, 3)]
     label: Optional label for the whole figure
+    random_sample: if set to true will display random subset of the passed images array
   """
   if(titles is not None and len(titles) < len(images)):
     raise Exception("titles array should has at least the same length as the images array")
+  
   [x, y] = shape
+  if random_sample:
+    idxes = np.random.choice(len(images), x * y, replace=False)
+  else: 
+    idxes = np.arange(x*y)
   figure = plt.figure(figsize=(15, int(15 * x / y)))
   imgs_count = np.minimum(x*y, len(images))
-  images_vis = np.array(images[:(x * y)])
+  images_vis = np.array(images[idxes])
+  if titles is not None:
+    titles_vis = np.array(titles[idxes])
   if(label is not None):
     figure.suptitle(label, fontsize="xx-large", fontweight="bold")
   for i in range(imgs_count):
@@ -38,9 +46,10 @@ def show_imgs(images, titles=None, shape=(3,3) , label=None):
     plt.subplot(x, y, i + 1)
     plt.imshow(image)
     if(titles is not None):
-      plt.title(titles[i])
+      plt.title(titles_vis[i])
     plt.axis("off")
   plt.show()
+
 
 
 def imgs_show_diff(images_1, images_2, titles=None, label=None):
